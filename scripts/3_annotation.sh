@@ -14,22 +14,22 @@
 ### Annotate C. huliohia isolate C25-2 genome with funannotate
 
 genome_name=${1}    ## ie. C25-5
-working_dir=${2}    ## ie. /private/groups/corbettlab/aanakamo/ROD_HAWAII/R491_GENOME_ANNOUNCEMENT/000_FINAL_ASSEMBLY/3_annotate/C25-5_funannotate_predict
+working_dir=${2}    
 
 # Run antiSMASH (optional) using the website: https://fungismash.secondarymetabolites.org/#!/start
 
 ## run phobius
 cd ${working_dir}
 phobius_out=Ceratocystis_huliohia_C25-5.proteins.phobius.out
-# phobius.pl -short predict_results/Ceratocystis_huliohia_C25-5.proteins.fa > ${phobius_out}
+phobius.pl -short predict_results/Ceratocystis_huliohia_C25-5.proteins.fa > ${phobius_out}
 
 ## run interpro scan
 cd ${working_dir}
 mkdir -p ${genome_name}_interpro
-# interproscan.sh -i predict_results/Ceratocystis_huliohia_C25-5.proteins.fa -d ${genome_name}_interpro -cpu 32 
+interproscan.sh -i predict_results/Ceratocystis_huliohia_C25-5.proteins.fa -d ${genome_name}_interpro -cpu 32 
 
 ## Annotate Genome
-cd ..
+cd ${working_dir}
 phobius_out=${working_dir}/Ceratocystis_huliohia_C25-5.proteins.phobius.out
 iprscan_out=${working_dir}/${genome_name}_interpro/Ceratocystis_huliohia_C25-5.proteins.fa.xml
 antismash_out=${working_dir}/Ceratocystis_huliohia_C25-5.antismash.gbk

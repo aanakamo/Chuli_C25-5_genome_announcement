@@ -1,6 +1,6 @@
 # Complete genome sequence of *Ceratocystis huliohia*, a fungal pathogen of the native ‘ōhi‘a tree in Hawai‘i
 
-[![BioProject](https://img.shields.io/badge/BioProject-PRJNA1400107-blue)](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1400107/)
+[![BioProject](https://img.shields.io/badge/BioProject-PRJNA1400107-a03	)](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1400107/)
 
 This repository contains scripts used to produce and analyze the complete *de novo* genome sequence of *Ceratocystis huliohia*, one of two fungal pathogens causing the Rapid ‘Ōhi‘a Death disease of the native ‘ōhi‘a tree in Hawai‘i. This assembly was generated using long-read Nanopore sequencing of *C. huliohia* isolate C25-5, collected on the island of Maui in April 2025.
 
@@ -20,7 +20,7 @@ Hawai‘i’s native forests are threatened by Rapid ‘Ōhi‘a Death (ROD), a 
 ## Methods Overview
 
 ### Data Generation
-- **Isolate:** C. huliohia C25-5 
+- **Isolate:** *C. huliohia* C25-5 
 - **Growth conditions** 
     - liquid media (2% malt extract, 0.2% yeast extract)
     - circular shaker at 150 RPM
@@ -35,23 +35,30 @@ Hawai‘i’s native forests are threatened by Rapid ‘Ōhi‘a Death (ROD), a 
 - **Resulting Raw Reads:** 1.57M (N50 3.23kb)
 
 ### Data Analysis
-Scripts in this repository are linked below for each step, and code is provided to show how they were run. Necessary programs and their versions are also provided.
+Scripts in this repository are linked below for each step, and code is provided to show how they were run. Necessary programs and their versions are also provided. These scripts were written to be run on the UCSC Genomics Institute Phoenix Computational Cluster. If you intend to use them, please modify for your particular system before running.
 
--  [1_basecalling.sh]()
-    - **Basecalling:** Dorado v1.1.1, sup model
--  [2_assembly.sh]()
-    - **Assembly:** Hifiasm v0.25.0-r726, ONT mode
-    - **Removal of duplicate contigs:** Funannotate v1.8.17
-    - **Telomere Identification:** tidk v0.2.65
-    - **Correction of misassemblies around telomeres:** [script here]()
-    - **Mitochondrial contig identification:** blastn v2.16.0+ against MT331822.1
-    - **Repeat masking:** Funannotate v1.8.17
-    - **Quality Assessment:** QUAST v5.3.0 and BUSCO v6.0.0
-3. [3_annotation.sh]()
-    - **Gene annotation:** Funannotate v1.8.17
+-  [1_basecalling.sh](https://github.com/aanakamo/Chuli_C25-5_genome_announcement/blob/main/scripts/1_basecalling.sh)
+    - example run: `sbatch 1_basecalling.sh ${POD5DIR} ${OUTDIR} sup`
+    - dependencies:
+        - **Basecalling:** Dorado v1.1.1, sup model
+-  [2_assembly.sh](https://github.com/aanakamo/Chuli_C25-5_genome_announcement/blob/main/scripts/2_assembly.sh)
+    - example run: `sbatch 2_assembly.sh ${FASTQ} C25-5 ${WORKING_DIR}`
+    - dependencies:
+        - **Assembly:** Hifiasm v0.25.0-r726, ONT mode
+        - **Removal of duplicate contigs:** Funannotate v1.8.17
+        - Determine coverage: minimap2, samtools
+        - **Correction of misassemblies around telomeres:** [telomere_curation.py](https://github.com/aanakamo/Chuli_C25-5_genome_announcement/blob/main/scripts/telomere_curation.py)
+        - **Mitochondrial contig identification:** blastn v2.16.0+ against MT331822.1
+        - **Repeat masking:** Funannotate v1.8.17
+        - **Telomere Identification:** tidk v0.2.65
+        - **Quality Assessment:** QUAST v5.3.0 and BUSCO v6.0.0
+- [3_annotation.sh](https://github.com/aanakamo/Chuli_C25-5_genome_announcement/blob/main/scripts/3_annotation.sh)
+    - example run: `sbatch 3_annotation.sh C25-5 ${WORKING_DIR}`
+    - dependencies:
+        - **Gene annotation:** Funannotate v1.8.17 (and its dependencies)
 
 ## Results
-Statistics for the final C. huliohia C25-5 genome assembly (GCA_054512535.1) are shown in the table below. Our assembly demonstrates high completeness, with a BUSCO score indicating 99.7% of fungal orthologs present. The majority of bases (97.6%) and coding sequences (98.6%) reside in the eight largest contigs (>1Mb), falling in the expected chromosome number range of ~7-9 for Ceratocystis species. All eight contigs >1Mb have a telomeric repeat present on at least one end, with five of them being chromosome-level and having telomeres on both ends.
+Statistics for the final *C. huliohia* C25-5 genome assembly (GCA_054512535.1) are shown in the table below. Our assembly demonstrates high completeness, with a BUSCO score indicating 99.7% of fungal orthologs present. The majority of bases (97.6%) and coding sequences (98.6%) reside in the eight largest contigs (>1Mb), falling in the expected chromosome number range of ~7-9 for Ceratocystis species. All eight contigs >1Mb have a telomeric repeat present on at least one end, with five of them being chromosome-level and having telomeres on both ends.
 
 **C25-5 Assembly summary**
 | <!-- -->    | <!-- -->    |
@@ -89,12 +96,12 @@ Statistics for the final C. huliohia C25-5 genome assembly (GCA_054512535.1) are
 
 
 ## Data Availability
-- BioProject:
-- BioSample:
-- Raw sequencing data: 
-- WGS Accession: 
-- Nuclear Genome Assembly & Annotation:
-- Mitochondrial Genome Assembly & Annotation:
+- BioProject: [PRJNA1400107](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1400107/)
+- BioSample: [SAMN54530507](https://www.ncbi.nlm.nih.gov/biosample/54530507)
+- Raw sequencing data (SRA): [SRR36741775](https://www.ncbi.nlm.nih.gov/sra/SRX31740809[accn])
+- WGS Accession: [JBTNIW000000000](https://www.ncbi.nlm.nih.gov/nuccore/JBTNIW000000000.1)
+- Nuclear Genome Assembly & Annotation: [GCA_054512535.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_054512535.1/)
+- Mitochondrial Genome Assembly & Annotation: [PX891014](https://www.ncbi.nlm.nih.gov/nuccore/PX891014)
 - Analysis code: https://github.com/aanakamo/Chuli_C25-5_genome_announcement (this GitHub repository)
 
 ## Citation

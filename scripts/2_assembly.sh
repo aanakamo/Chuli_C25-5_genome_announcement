@@ -13,7 +13,7 @@
 
 ### Assemble C. huliohia isolate C25-2 genome from raw Nanopore reads
 
-fastq=${1}             ## ie. R491.merged.rmdup.fastq.gz
+fastq=${1}             ## ie. SRR36741775.fastq.gz
 genome_name=${2}       ## ie. C25-5
 working_dir=${3}       
 
@@ -95,33 +95,6 @@ echo -e "\n   Contig names and sizes here: ${fa_size}\n"
 echo "*** Starting QC ***"
 masked_fa=${working_dir}/1_hifiasm/${genome_name}.bp.p_ctg.funannotate_clean_sort_masked.telo_cur.fa
 
-## coverage
-cd ${working_dir}
-mkdir -p 2_QC; cd 2_QC
-echo "*** Coverage"
-out_sam=${genome_name}.ONT.minimap2.sam
-minimap2 -x map-ont -a -t ${SLURM_CPUS_PER_TASK} ${masked_fa} ${fastq} > ${out_sam}
-out_bam=${genome_name}.ONT.minimap2.bam
-samtools view -h -Sb ${out_sam} | samtools sort - -O 'bam' -T samtools_temp -o ${out_bam}
-filt_bam=${genome_name}.ONT.minimap2.filt.bam
-samtools view -h -b ${out_bam} | samtools sort - -O 'bam' -T samtools_temp -o ${filt_bam}
-samtools index ${filt_bam}
-source activate /private/home/aanakamo/miniforge3/envs/mosdepth
-mosdepth_out=${genome_name}
-mosdepth -t ${SLURM_CPUS_PER_TASK} ${mosdepth_out} ${filt_bam}
-conda deactivate
-
-## GC
-echo "*** GC content"
-source activate /private/home/aanakamo/miniforge3/envs/emboss
-gc_out=geecee_${genome_name}
-geecee -sequence ${masked_fa} -outfile ${gc_out}
-conda deactivate
-
-source activate /private/home/aanakamo/miniforge3/envs/matplotlib
-python ~/CD_Lab/rod_hawaii/scripts/plot_gc_cov_len.py ${gc_out} ${mosdepth_out}.mosdepth.summary.txt ${genome_name}
-conda deactivate
-
 ## tidk
 echo "*** Telomere identification"
 source activate /private/home/aanakamo/miniforge3/envs/tidk
@@ -133,7 +106,8 @@ conda deactivate
 echo "*** QUAST"
 source activate /private/home/aanakamo/miniforge3/envs/quast
 echo "Running quast for ${genome_name}"
-quast ${masked_fa} --nanopore ${fastq} -t 32 -o QUAST_${genome_name} --circos --k-mer-stats --glimmer --conserved-genes-finding --rna-finding --est-ref-size 30000000 --fungus 
+quast ${masked_fa} --nanopore ${fastq} -t 32 -o QUAST_${genome_name} --circos --k-mer-stats \
+            --glimmer --conserved-genes-finding --rna-finding --est-ref-size 30000000 --fungus 
 conda deactivate
 
 ## BUSCO
@@ -151,12 +125,4 @@ mkdir -p 3_annotate; cd 3_annotate
 source activate /private/home/aanakamo/miniforge3/envs/funannotate
 predicted_out=${genome_name}_funannotate_predict
 funannotate predict -i ${masked_fa} -o ${predicted_out} --species "Ceratocystis huliohia" --strain ${genome_name}
-## Add species parameters to database:
-# funannotate species -s ceratocystis_huliohia_c25-5 -a ${genome_name}_funannotate_predict/predict_results/ceratocystis_huliohia_c25-5.parameters.json
 conda deactivate
-
-cd ${working_dir}
-gff_file=${working_dir}/3_annotate/${predicted_out}/predict_results/Ceratocystis_huliohia_C25-5.gff3
-gc_repeat_out=${working_dir}/1_hifiasm/${genome_name}.bp.p_ctg.funannotate_clean_sort_masked.telo_cur.GC_REPEAT.tsv
-python ~/CD_Lab/rod_hawaii/scripts/windowed_gc_repeat.py \
-            -g ${masked_fa} -w 50000 -a ${gff_file} -o ${gc_repeat_out}
