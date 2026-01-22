@@ -46,9 +46,9 @@ Scripts in this repository are linked below for each step, and code is provided 
     - dependencies:
         - **Assembly:** Hifiasm v0.25.0-r726, ONT mode
         - **Removal of duplicate contigs:** Funannotate v1.8.17
-        - Determine coverage: minimap2, samtools
-        - **Correction of misassemblies around telomeres:** [telomere_curation.py](https://github.com/aanakamo/Chuli_C25-5_genome_announcement/blob/main/scripts/telomere_curation.py)
-        - **Mitochondrial contig identification:** blastn v2.16.0+ against MT331822.1
+        - **Determine coverage:** minimap2 v2.24-r1122, samtools v1.13
+        - **Correction of misassemblies around telomeres:** [telomere_curation.py](https://github.com/aanakamo/Chuli_C25-5_genome_announcement/blob/main/scripts/telomere_curation.py), bedtools v2.31.1
+        - **Mitochondrial contig identification:** blastn v2.16.0+ against MT331822.1, seqkit v2.10.1
         - **Repeat masking:** Funannotate v1.8.17
         - **Telomere Identification:** tidk v0.2.65
         - **Quality Assessment:** QUAST v5.3.0 and BUSCO v6.0.0
